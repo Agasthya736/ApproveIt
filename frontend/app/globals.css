@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #16233A;
+  --ink-deep: #0F1826;
+  --paper: #F3EEE1;
+  --paper-line: #DDD5C0;
+  --stamp: #C1443A;
+  --sage: #6B9080;
+  --brass: #C6A15B;
+  --text-on-ink: #EDE6D6;
+}
+
+body {
+  background: var(--ink);
+  color: var(--text-on-ink);
+  font-family: var(--font-body);
+}
+
+.font-display { font-family: var(--font-display); }
+.font-mono { font-family: var(--font-mono); }
+
+.ledger-line {
+  border-bottom: 1px solid var(--paper-line);
+}
+
+@keyframes stampDown {
+  0%   { transform: translateY(-140px) rotate(-18deg) scale(1.4); opacity: 0; }
+  60%  { transform: translateY(6px) rotate(-9deg) scale(1); opacity: 1; }
+  75%  { transform: translateY(-2px) rotate(-9deg) scale(1.02); }
+  100% { transform: translateY(0) rotate(-9deg) scale(1); }
+}
+
+.stamp-animate {
+  animation: stampDown 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  animation: fadeUp 0.7s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stamp-animate, .reveal {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
