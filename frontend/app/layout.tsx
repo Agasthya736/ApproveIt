@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Fraunces, Public_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
+declare module "*.css";
+
 const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-display",
