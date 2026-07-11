@@ -64,3 +64,35 @@ export async function getMyExpenses() {
   if (!res.ok) throw new Error("Failed to load expenses");
   return res.json();
 }
+export async function getPendingApprovals() {
+  const res = await fetch(`${API_BASE}/api/approvals/pending?size=50`, {
+    headers: authHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to load pending approvals");
+  return res.json();
+}
+
+export async function approveExpense(expenseId: number) {
+  const res = await fetch(`${API_BASE}/api/approvals/${expenseId}/approve`, {
+    method: "POST",
+    headers: authHeaders(),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to approve");
+  }
+  return res.json();
+}
+
+export async function rejectExpense(expenseId: number, comment: string) {
+  const res = await fetch(`${API_BASE}/api/approvals/${expenseId}/reject`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ comment }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to reject");
+  }
+  return res.json();
+}
