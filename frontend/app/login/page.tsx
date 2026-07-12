@@ -17,8 +17,16 @@ export default function LoginPage() {
       const res = await loginUser(form);
       localStorage.setItem("accessToken", res.accessToken);
       localStorage.setItem("userName", res.name);
-      router.push("/dashboard");
-    } catch (err: any) {
+      localStorage.setItem("userRoles", JSON.stringify(res.roles));
+
+      if (res.roles.includes("ADMIN")) {
+        router.push("/admin");
+      } else if (res.roles.includes("MANAGER")) {
+        router.push("/manager");
+      } else {
+        router.push("/dashboard");
+      }
+    }catch (err: any){
       setError(err.message);
     } finally {
       setLoading(false);

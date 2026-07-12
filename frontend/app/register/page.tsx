@@ -17,6 +17,7 @@ export default function RegisterPage() {
       const res = await registerUser(form);
       localStorage.setItem("accessToken", res.accessToken);
       localStorage.setItem("userName", res.name);
+      localStorage.setItem("userRoles", JSON.stringify(res.roles));
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message);
