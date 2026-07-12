@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getAllUsers, updateUserRole, updateUserManager } from "../lib/api";
+import { getAllUsers, updateUserRole, updateUserManager, getAllExpensesAdmin } from "../lib/api";
 import { useRoleGuard } from "../hooks/useRoleGuard";
+
 type UserRow = {
   id: number;
   name: string;
@@ -13,6 +14,17 @@ type UserRow = {
   roles: string[];
 };
 
+type ExpenseRow = {
+  id: number;
+  employeeName: string;
+  category: string;
+  amount: number;
+  currency: string;
+  description: string;
+  status: string;
+  submittedAt: string;
+};
+
 const ROLES = ["EMPLOYEE", "MANAGER", "ADMIN"];
 
 export default function AdminPage() {
@@ -20,6 +32,7 @@ export default function AdminPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [users, setUsers] = useState<UserRow[]>([]);
+  const [expenses, setExpenses] = useState<ExpenseRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [savingId, setSavingId] = useState<number | null>(null);
@@ -28,7 +41,9 @@ export default function AdminPage() {
     if (!authorized) return;
     setName(localStorage.getItem("userName") || "");
     loadUsers();
+    loadExpenses();
   }, [authorized]);
+
   async function loadUsers() {
     try {
       const data = await getAllUsers();
@@ -37,6 +52,15 @@ export default function AdminPage() {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function loadExpenses() {
+    try {
+      const data = await getAllExpensesAdmin();
+      setExpenses(data.content || data);
+    } catch (err: any) {
+      setError(err.message);
     }
   }
 
@@ -72,7 +96,7 @@ export default function AdminPage() {
     router.push("/");
   }
 
-if (checking) {
+  if (checking) {
     return <main className="min-h-screen flex items-center justify-center text-white/60">Checking access...</main>;
   }
   if (!authorized) {
@@ -145,6 +169,40 @@ if (checking) {
                   </td>
                 </tr>
               ))}
+            </tbody>
+          </table>
+        </div>
+
+        <h2 className="font-display text-xl font-semibold mb-6 mt-12">All expenses</h2>
+        <div className="bg-[var(--paper)] text-[var(--ink-deep)] rounded-sm shadow-2xl overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-black/10 text-left">
+                <th className="px-6 py-4 font-medium">Employee</th>
+                <th className="px-6 py-4 font-medium">Category</th>
+                <th className="px-6 py-4 font-medium">Amount</th>
+                <th className="px-6 py-4 font-medium">Status</th>
+                <th className="px-6 py-4 font-medium">Submitted</th>
+              </tr>
+            </thead>
+            <tbody>
+              {expenses.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-6 text-black/50 text-center">No expenses yet.</td>
+                </tr>
+              ) : (
+                expenses.map((e) => (
+                  <tr key={e.id} className="border-b border-black/5 last:border-0">
+                    <td className="px-6 py-4 font-medium">{e.employeeName}</td>
+                    <td className="px-6 py-4">{e.category}</td>
+                    <td className="px-6 py-4 font-mono">{e.currency} {e.amount.toFixed(2)}</td>
+                    <td className="px-6 py-4 font-mono text-xs uppercase">{e.status}</td>
+                    <td className="px-6 py-4 text-black/60 text-xs">
+                      {new Date(e.submittedAt).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

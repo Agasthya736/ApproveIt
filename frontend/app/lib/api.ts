@@ -129,3 +129,10 @@ export async function updateUserManager(userId: number, managerId: number | null
   }
   return res.json();
 }
+export async function getAllExpensesAdmin() {
+  const res = await fetch(`${API_BASE}/api/expenses/all?size=100`, {
+    headers: authHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to load expenses");
+  return res.json();
+}
