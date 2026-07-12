@@ -1,12 +1,20 @@
 package com.example.ApproveIt.service;
 
-import com.example.ApproveIt.dto.*;
-import com.example.ApproveIt.entity.*;
-import com.example.ApproveIt.repository.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import com.example.ApproveIt.dto.ExpenseRequest;
+import com.example.ApproveIt.dto.ExpenseResponse;
+import com.example.ApproveIt.entity.Category;
+import com.example.ApproveIt.entity.Expense;
+import com.example.ApproveIt.entity.ExpenseStatus;
+import com.example.ApproveIt.entity.User;
+import com.example.ApproveIt.repository.CategoryRepository;
+import com.example.ApproveIt.repository.ExpenseRepository;
+import com.example.ApproveIt.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -83,4 +91,8 @@ public class ExpenseService {
         expense.setStatus(ExpenseStatus.CANCELLED);
         expenseRepository.save(expense);
     }
+    public Page<ExpenseResponse> getAllExpenses(Pageable pageable) {
+    return expenseRepository.findAll(pageable)
+            .map(ExpenseResponse::fromEntity);
+}
 }
