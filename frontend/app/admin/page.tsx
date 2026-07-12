@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAllUsers, updateUserRole, updateUserManager } from "../lib/api";
-
+import { useRoleGuard } from "../hooks/useRoleGuard";
 type UserRow = {
   id: number;
   name: string;
@@ -16,6 +16,7 @@ type UserRow = {
 const ROLES = ["EMPLOYEE", "MANAGER", "ADMIN"];
 
 export default function AdminPage() {
+  const { authorized, checking } = useRoleGuard(["ADMIN"]);
   const router = useRouter();
   const [name, setName] = useState("");
   const [users, setUsers] = useState<UserRow[]>([]);
@@ -24,15 +25,10 @@ export default function AdminPage() {
   const [savingId, setSavingId] = useState<number | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      router.push("/login");
-      return;
-    }
+    if (!authorized) return;
     setName(localStorage.getItem("userName") || "");
     loadUsers();
-  }, [router]);
-
+  }, [authorized]);
   async function loadUsers() {
     try {
       const data = await getAllUsers();
@@ -76,6 +72,12 @@ export default function AdminPage() {
     router.push("/");
   }
 
+if (checking) {
+    return <main className="min-h-screen flex items-center justify-center text-white/60">Checking access...</main>;
+  }
+  if (!authorized) {
+    return null;
+  }
   if (loading) {
     return <main className="min-h-screen flex items-center justify-center text-white/60">Loading...</main>;
   }
