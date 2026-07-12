@@ -96,3 +96,36 @@ export async function rejectExpense(expenseId: number, comment: string) {
   }
   return res.json();
 }
+export async function getAllUsers() {
+  const res = await fetch(`${API_BASE}/api/users`, {
+    headers: authHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to load users");
+  return res.json();
+}
+
+export async function updateUserRole(userId: number, role: string) {
+  const res = await fetch(`${API_BASE}/api/users/${userId}/role`, {
+    method: "PATCH",
+    headers: authHeaders(),
+    body: JSON.stringify({ role }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to update role");
+  }
+  return res.json();
+}
+
+export async function updateUserManager(userId: number, managerId: number | null) {
+  const res = await fetch(`${API_BASE}/api/users/${userId}/manager`, {
+    method: "PATCH",
+    headers: authHeaders(),
+    body: JSON.stringify({ managerId }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to update manager");
+  }
+  return res.json();
+}
